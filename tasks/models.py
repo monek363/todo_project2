@@ -1,0 +1,19 @@
+from django.db import models
+
+class Task(models.Model):
+    title = models.CharField(
+        max_length=200
+    )
+    completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+    
+# Create your models here.
+"""
+password = adminlinuxoid957
+python manage.py createsuperuser
+python manage.py runserver
+python manage.py startapp tasks ! 'tasks' conflicts with the name
+django-admin startproject todo_project
+"""
