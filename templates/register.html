@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстрація - Do Did Done</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            padding: 3rem 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .auth-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .auth-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .auth-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        .auth-form {
+            padding: 2.5rem;
+        }
+
+        .alert {
+            display: none;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert.show {
+            display: flex;
+        }
+
+        .alert svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .alert p {
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-error svg {
+            color: #dc2626;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .alert-success svg {
+            color: #16a34a;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            font-size: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .auth-footer p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .link {
+            color: #a855f7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .info-box {
+            margin-top: 1.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-box p {
+            font-size: 0.875rem;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+
+        .info-box strong {
+            color: #a855f7;
+        }
+
+        @media (max-width: 640px) {
+            .auth-header h1 {
+                font-size: 1.75rem;
+            }
+
+            .auth-form {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="8.5" cy="7" r="4" />
+                        <line x1="20" y1="8" x2="20" y2="14" />
+                        <line x1="23" y1="11" x2="17" y2="11" />
+                    </svg>
+                </div>
+                <h1>Реєстрація</h1>
+                <p>Створіть новий акаунт</p>
+            </div>
+
+            <form class="auth-form" id="registerForm">
+                <div class="alert alert-error" id="errorAlert">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <p id="errorMessage"></p>
+                </div>
+
+                <div class="alert alert-success" id="successAlert">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                    <p>Реєстрація успішна! Перенаправлення...</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Ім'я користувача</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <input
+                            type="text"
+                            id="username"
+                            class="input"
+                            placeholder="Ваше ім'я"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="16" rx="2" />
+                            <polyline points="3 4 12 13 21 4" />
+                        </svg>
+                        <input
+                            type="email"
+                            id="email"
+                            class="input"
+                            placeholder="your@email.com"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <input
+                            type="password"
+                            id="password"
+                            class="input"
+                            placeholder="••••••••"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Підтвердження пароля</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            class="input"
+                            placeholder="••••••••"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="8.5" cy="7" r="4" />
+                        <line x1="20" y1="8" x2="20" y2="14" />
+                        <line x1="23" y1="11" x2="17" y2="11" />
+                    </svg>
+                    Зареєструватися
+                </button>
+
+                <div class="auth-footer">
+                    <p>
+                        Вже є акаунт?
+                        <a href="{% url 'login' %}" class="link">Увійти</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <div class="info-box">
+            <p><strong>Примітка:</strong> Це демо-версія. Дані зберігаються локально в браузері.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            const successAlert = document.getElementById('successAlert');
+
+            // Очистка попередніх повідомлень
+            errorAlert.classList.remove('show');
+            successAlert.classList.remove('show');
+
+            // Валідація
+            if (!username || !email || !password || !confirmPassword) {
+                errorMessage.textContent = 'Будь ласка, заповніть всі поля';
+                errorAlert.classList.add('show');
+                return;
+            }
+
+            if (password.length < 6) {
+                errorMessage.textContent = 'Пароль повинен містити щонайменше 6 символів';
+                errorAlert.classList.add('show');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorMessage.textContent = 'Паролі не співпадають';
+                errorAlert.classList.add('show');
+                return;
+            }
+
+            // Збереження даних
+            localStorage.setItem('savedUsername', username);
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userPassword', password);
+            localStorage.setItem('username', username);
+            localStorage.setItem('isLoggedIn', 'true');
+
+            // Показати успішне повідомлення
+            successAlert.classList.add('show');
+
+            // Перенаправлення на головну сторінку
+            setTimeout(function() {
+                window.location.href = "{% url 'profile' %}";
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

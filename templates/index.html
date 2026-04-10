@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do · Did · Done - Менеджер Задач</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .task-input-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-input-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .task-input-form {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .task-input {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .task-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-add {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-add:active {
+            transform: translateY(0);
+        }
+
+        .columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .column {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            max-height: 700px;
+        }
+
+        .column-header {
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        .column-header-do {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .column-header-did {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .column-header-done {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .column-header h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .column-header p {
+            font-size: 0.875rem;
+            opacity: 0.95;
+        }
+
+        .column-body {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .column-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .column-body::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+
+        .column-body::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .column-body::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        .task-card {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.3s;
+        }
+
+        .task-card:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .task-text {
+            color: #1f2937;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            word-wrap: break-word;
+        }
+
+        .task-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .task-actions-left {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .btn-icon svg {
+            width: 18px;
+            height: 18px;
+            color: #4b5563;
+        }
+
+        .btn-delete {
+            opacity: 0;
+            transition: opacity 0.2s, border-color 0.2s, background 0.2s;
+        }
+
+        .task-card:hover .btn-delete {
+            opacity: 1;
+        }
+
+        .btn-delete:hover {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .btn-delete:hover svg {
+            color: #ef4444;
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            color: #9ca3af;
+            text-align: center;
+        }
+
+        .column-footer {
+            padding: 1rem 1.5rem;
+            background: #f9fafb;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .column-footer p {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .header {
+            position: relative;
+        }
+
+        .header-nav {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .account-info {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            color: white;
+        }
+
+        .account-avatar {
+            width: 34px;
+            height: 34px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .account-avatar svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .account-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.28);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .btn-logout svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .header-nav {
+                position: static;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+
+            .task-input-form {
+                flex-direction: column;
+            }
+
+            .btn-add {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-nav">
+                <div class="account-info">
+                    <div class="account-avatar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </div>
+                    <span class="account-name" id="accountName">Guest</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    Вийти
+                </button>
+            </div>
+            <h1>Do · Did · Done</h1>
+            <p>Організуйте свої завдання ефективно</p>
+        </div>
+
+        <div class="task-input-section">
+            <h2>Додати нову задачу</h2>
+            <div class="task-input-form">
+                <input
+                    type="text"
+                    class="task-input"
+                    id="taskInput"
+                    placeholder="Введіть опис задачі..."
+                />
+                <button onclick="addTask()" class="btn-add">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Додати
+                </button>
+            </div>
+        </div>
+
+        <div class="columns">
+            <!-- DO Column -->
+            <div class="column">
+                <div class="column-header column-header-do">
+                    <h3>Do</h3>
+                    <p>Треба зробити</p>
+                </div>
+                <div class="column-body" id="doColumn">
+                    <div class="empty-state">
+                        <p>Немає задач у цій категорії</p>
+                    </div>
+                </div>
+                <div class="column-footer">
+                    <p>Всього: <span id="doCount">0</span></p>
+                </div>
+            </div>
+
+            <!-- DID Column -->
+            <div class="column">
+                <div class="column-header column-header-did">
+                    <h3>Did</h3>
+                    <p>В процесі</p>
+                </div>
+                <div class="column-body" id="didColumn">
+                    <div class="empty-state">
+                        <p>Немає задач у цій категорії</p>
+                    </div>
+                </div>
+                <div class="column-footer">
+                    <p>Всього: <span id="didCount">0</span></p>
+                </div>
+            </div>
+
+            <!-- DONE Column -->
+            <div class="column">
+                <div class="column-header column-header-done">
+                    <h3>Done</h3>
+                    <p>Виконано</p>
+                </div>
+                <div class="column-body" id="doneColumn">
+                    <div class="empty-state">
+                        <p>Немає задач у цій категорії</p>
+                    </div>
+                </div>
+                <div class="column-footer">
+                    <p>Всього: <span id="doneCount">0</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Відображення імені користувача
+        const username = localStorage.getItem('username');
+        if (username) {
+            document.getElementById('accountName').textContent = username;
+        }
+
+        // Функція виходу з акаунту
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            window.location.href = "{% url 'login' %}";
+        }
+
+        // Завантаження задач з localStorage
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        // Функція для збереження задач в localStorage
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Функція для додавання нової задачі
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+
+            if (text) {
+                const task = {
+                    id: Date.now().toString(),
+                    text: text,
+                    status: 'do',
+                    createdAt: Date.now()
+                };
+
+                tasks.push(task);
+                saveTasks();
+                input.value = '';
+                renderTasks();
+            }
+        }
+
+        // Функція для видалення задачі
+        function deleteTask(id) {
+            tasks = tasks.filter(task => task.id !== id);
+            saveTasks();
+            renderTasks();
+        }
+
+        // Функція для переміщення задачі
+        function moveTask(id, direction) {
+            tasks = tasks.map(task => {
+                if (task.id === id) {
+                    if (direction === 'forward') {
+                        if (task.status === 'do') task.status = 'did';
+                        else if (task.status === 'did') task.status = 'done';
+                    } else if (direction === 'backward') {
+                        if (task.status === 'done') task.status = 'did';
+                        else if (task.status === 'did') task.status = 'do';
+                    }
+                }
+                return task;
+            });
+            saveTasks();
+            renderTasks();
+        }
+
+        // Функція для створення HTML задачі
+        function createTaskCard(task) {
+            const card = document.createElement('div');
+            card.className = 'task-card';
+
+            const taskText = document.createElement('p');
+            taskText.className = 'task-text';
+            taskText.textContent = task.text;
+
+            const actions = document.createElement('div');
+            actions.className = 'task-actions';
+
+            const actionsLeft = document.createElement('div');
+            actionsLeft.className = 'task-actions-left';
+
+            // Кнопка назад (для did і done)
+            if (task.status !== 'do') {
+                const btnBack = document.createElement('button');
+                btnBack.className = 'btn-icon';
+                btnBack.title = 'Повернути назад';
+                btnBack.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                `;
+                btnBack.onclick = () => moveTask(task.id, 'backward');
+                actionsLeft.appendChild(btnBack);
+            }
+
+            // Кнопка вперед (для do і did)
+            if (task.status !== 'done') {
+                const btnForward = document.createElement('button');
+                btnForward.className = 'btn-icon';
+                btnForward.title = 'Перемістити далі';
+                btnForward.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                `;
+                btnForward.onclick = () => moveTask(task.id, 'forward');
+                actionsLeft.appendChild(btnForward);
+            }
+
+            // Кнопка видалення
+            const btnDelete = document.createElement('button');
+            btnDelete.className = 'btn-icon btn-delete';
+            btnDelete.title = 'Видалити';
+            btnDelete.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+            `;
+            btnDelete.onclick = () => deleteTask(task.id);
+
+            actions.appendChild(actionsLeft);
+            actions.appendChild(btnDelete);
+
+            card.appendChild(taskText);
+            card.appendChild(actions);
+
+            return card;
+        }
+
+        // Функція для відображення задач
+        function renderTasks() {
+            const doColumn = document.getElementById('doColumn');
+            const didColumn = document.getElementById('didColumn');
+            const doneColumn = document.getElementById('doneColumn');
+
+            // Очищення колонок
+            doColumn.innerHTML = '';
+            didColumn.innerHTML = '';
+            doneColumn.innerHTML = '';
+
+            // Розподіл задач по колонках
+            const doTasks = tasks.filter(task => task.status === 'do');
+            const didTasks = tasks.filter(task => task.status === 'did');
+            const doneTasks = tasks.filter(task => task.status === 'done');
+
+            // Відображення Do задач
+            if (doTasks.length === 0) {
+                doColumn.innerHTML = '<div class="empty-state"><p>Немає задач у цій категорії</p></div>';
+            } else {
+                doTasks.forEach(task => {
+                    doColumn.appendChild(createTaskCard(task));
+                });
+            }
+
+            // Відображення Did задач
+            if (didTasks.length === 0) {
+                didColumn.innerHTML = '<div class="empty-state"><p>Немає задач у цій категорії</p></div>';
+            } else {
+                didTasks.forEach(task => {
+                    didColumn.appendChild(createTaskCard(task));
+                });
+            }
+
+            // Відображення Done задач
+            if (doneTasks.length === 0) {
+                doneColumn.innerHTML = '<div class="empty-state"><p>Немає задач у цій категорії</p></div>';
+            } else {
+                doneTasks.forEach(task => {
+                    doneColumn.appendChild(createTaskCard(task));
+                });
+            }
+
+            // Оновлення лічильників
+            document.getElementById('doCount').textContent = doTasks.length;
+            document.getElementById('didCount').textContent = didTasks.length;
+            document.getElementById('doneCount').textContent = doneTasks.length;
+        }
+
+        // Обробка натискання Enter в полі вводу
+        document.getElementById('taskInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        // Початкове відображення задач
+        renderTasks();
+    </script>
+</body>
+</html>

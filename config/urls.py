@@ -1,5 +1,5 @@
 """
-URL configuration for todo_project project.
+URL configuration for config project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
@@ -16,7 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from tasks import views as task_main
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', task_main.main , name="main" ),
+    path('/register', task_main.register , name="register" ),
+    path('/login', task_main.login , name="login" ),
+    path('/index', task_main.index , name="profile" ),
 ]
+

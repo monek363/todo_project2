@@ -15,5 +15,5 @@ password = adminlinuxoid957
 python manage.py createsuperuser
 python manage.py runserver
 python manage.py startapp tasks ! 'tasks' conflicts with the name
-django-admin startproject todo_project
+django-admin startproject config
 """

@@ -1,0 +1,10 @@
+Django>=5.0,<5.1
+django-crispy-forms>=2.0
+crispy-bootstrap5
+python-dotenv
+Pillow
+anthropic
+requests
+gunicorn
+whitenoise
+django-environ
