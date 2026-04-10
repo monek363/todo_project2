@@ -1,6 +1,7 @@
 from django.db import models
 
 class Task(models.Model):
+    id = models.BigAutoField(primary_key=True)
     title = models.CharField(
         max_length=200
     )

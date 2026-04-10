@@ -17,10 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from tasks import views as task_main
+from users import views as user_main
+
 urlpatterns = [
     path('', task_main.main , name="main" ),
-    path('/register', task_main.register , name="register" ),
-    path('/login', task_main.login , name="login" ),
-    path('/index', task_main.index , name="profile" ),
+    path('register', user_main.register , name="register" ),
+    path('login', user_main.login , name="login" ),
+    path('index', task_main.index , name="profile" ),
+    path("admin/", admin.site.urls),
 ]
 
