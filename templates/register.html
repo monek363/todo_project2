@@ -261,14 +261,21 @@
                 <p>Створіть новий акаунт</p>
             </div>
 
-            <form class="auth-form" id="registerForm">
-                <div class="alert alert-error" id="errorAlert">
+            <form class="auth-form" id="registerForm" method="post" action="">
+                {% csrf_token %}
+                <div class="alert alert-error {% if errors %}show{% endif %}" id="errorAlert">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="10" />
                         <line x1="12" y1="8" x2="12" y2="12" />
                         <line x1="12" y1="16" x2="12.01" y2="16" />
                     </svg>
-                    <p id="errorMessage"></p>
+                    <p id="errorMessage">
+                        {% if errors %}
+                            {% for error in errors %}
+                                {{ error }}{% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </p>
                 </div>
 
                 <div class="alert alert-success" id="successAlert">
@@ -289,8 +296,10 @@
                         <input
                             type="text"
                             id="username"
+                            name="username"
                             class="input"
                             placeholder="Ваше ім'я"
+                            value="{{ username }}"
                             required
                         />
                     </div>
@@ -306,8 +315,10 @@
                         <input
                             type="email"
                             id="email"
+                            name="email"
                             class="input"
                             placeholder="your@email.com"
+                            value="{{ email }}"
                             required
                         />
                     </div>
@@ -323,6 +334,7 @@
                         <input
                             type="password"
                             id="password"
+                            name="password"
                             class="input"
                             placeholder="••••••••"
                             required
@@ -340,6 +352,7 @@
                         <input
                             type="password"
                             id="confirmPassword"
+                            name="confirm_password"
                             class="input"
                             placeholder="••••••••"
                             required
@@ -367,60 +380,8 @@
         </div>
 
         <div class="info-box">
-            <p><strong>Примітка:</strong> Це демо-версія. Дані зберігаються локально в браузері.</p>
+            <p><strong>Примітка:</strong> Це демо-версія. Дані зберігаються на сервері у вашій локальній базі даних.</p>
         </div>
     </div>
-
-    <script>
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const username = document.getElementById('username').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const errorAlert = document.getElementById('errorAlert');
-            const errorMessage = document.getElementById('errorMessage');
-            const successAlert = document.getElementById('successAlert');
-
-            // Очистка попередніх повідомлень
-            errorAlert.classList.remove('show');
-            successAlert.classList.remove('show');
-
-            // Валідація
-            if (!username || !email || !password || !confirmPassword) {
-                errorMessage.textContent = 'Будь ласка, заповніть всі поля';
-                errorAlert.classList.add('show');
-                return;
-            }
-
-            if (password.length < 6) {
-                errorMessage.textContent = 'Пароль повинен містити щонайменше 6 символів';
-                errorAlert.classList.add('show');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                errorMessage.textContent = 'Паролі не співпадають';
-                errorAlert.classList.add('show');
-                return;
-            }
-
-            // Збереження даних
-            localStorage.setItem('savedUsername', username);
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('userPassword', password);
-            localStorage.setItem('username', username);
-            localStorage.setItem('isLoggedIn', 'true');
-
-            // Показати успішне повідомлення
-            successAlert.classList.add('show');
-
-            // Перенаправлення на головну сторінку
-            setTimeout(function() {
-                window.location.href = "{% url 'profile' %}";
-            }, 1500);
-        });
-    </script>
 </body>
 </html>

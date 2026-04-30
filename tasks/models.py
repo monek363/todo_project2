@@ -6,6 +6,8 @@ class Task(models.Model):
         max_length=200
     )
     completed = models.BooleanField(default=False)
+    priority = models.IntegerField(default=0)
+    color = models.CharField(max_length=20, default='white')
 
     def __str__(self):
         return self.title
