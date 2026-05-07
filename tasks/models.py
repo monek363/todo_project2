@@ -13,10 +13,3 @@ class Task(models.Model):
         return self.title
     
 # Create your models here.
-"""
-password = adminlinuxoid957
-python manage.py createsuperuser
-python manage.py runserver
-python manage.py startapp tasks ! 'tasks' conflicts with the name
-django-admin startproject config
-"""

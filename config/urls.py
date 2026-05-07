@@ -23,6 +23,7 @@ urlpatterns = [
     path('', task_main.main , name="main" ),
     path('register', user_main.register , name="register" ),
     path('login', user_main.login , name="login" ),
+    path('logout', user_main.logout, name="logout" ),
     path('index', task_main.index , name="profile" ),
     path("admin/", admin.site.urls),
 ]
