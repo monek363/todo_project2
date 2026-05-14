@@ -25,6 +25,9 @@ urlpatterns = [
     path('login', user_main.login , name="login" ),
     path('logout', user_main.logout, name="logout" ),
     path('index', task_main.index , name="profile" ),
+    path('task/create', task_main.create_task, name="create_task"),
+    path('task/<int:task_id>/toggle', task_main.toggle_task, name="toggle_task"),
+    path('task/<int:task_id>/delete', task_main.delete_task, name="delete_task"),
     path("admin/", admin.site.urls),
 ]
 
